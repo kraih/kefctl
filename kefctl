@@ -125,10 +125,16 @@ elsif ($status) {
     107 => ['Optical',   'Never',      'Yes'],
     111 => ['Bluetooth', 'Never',      'Yes'],
   };
+  my $power = 'On';
+  if ($source >= 130) {
+    $power = 'Off';
+    $source -= 128;
+  }
   $source = $sources->{$source} || ['Unknown', 'Unknown', 'Unknown'];
   say "Input:   $source->[0]";
   say "Standby: $source->[1]";
   say "Inverse: $source->[2]";
+  say "Power:   $power";
 }
 
 # Usage
