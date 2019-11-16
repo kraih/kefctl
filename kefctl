@@ -26,24 +26,24 @@ my $OFF         = "\x53\x30\x81\x9b\x0b";
 my $MUTE        = "\x53\x25\x81\xda\x5f";
 my $INPUT       = {
   aux => {
-    0  => "\x53\x30\x81\x2a\x9b",
-    20 => "\x53\x30\x81\x0a\x9b",
-    60 => "\x53\x30\x81\x1a\x9b"
+    0  => ["\x53\x30\x81\x2a\x9b", "\x53\x30\x81\x6a\x9b"],
+    20 => ["\x53\x30\x81\x0a\x9b", "\x53\x30\x81\x4a\x9b"],
+    60 => ["\x53\x30\x81\x1a\x9b", "\x53\x30\x81\x5a\x9b"]
   },
   bluetooth => {
-    0  => "\x53\x30\x81\x29\xad",
-    20 => "\x53\x30\x81\x09\xad",
-    60 => "\x53\x30\x81\x19\xad"
+    0  => ["\x53\x30\x81\x29\xad", "\x53\x30\x81\x69\xad"],
+    20 => ["\x53\x30\x81\x09\xad", "\x53\x30\x81\x49\xad"],
+    60 => ["\x53\x30\x81\x19\xad", "\x53\x30\x81\x59\xad"]
   },
   optical => {
-    0  => "\x53\x30\x81\x2b\x00",
-    20 => "\x53\x30\x81\x0b\x00",
-    60 => "\x53\x30\x81\x1b\x00"
+    0  => ["\x53\x30\x81\x2b\x00", "\x53\x30\x81\x6b\x00"],
+    20 => ["\x53\x30\x81\x0b\x00", "\x53\x30\x81\x4b\x00"],
+    60 => ["\x53\x30\x81\x1b\x00", "\x53\x30\x81\x5b\x00"]
   },
   wifi => {
-    0  => "\x53\x30\x81\x22\x82",
-    20 => "\x53\x30\x81\x02\x82",
-    60 => "\x53\x30\x81\x12\x82"
+    0  => ["\x53\x30\x81\x22\x82", "\x53\x30\x81\x62\x82"],
+    20 => ["\x53\x30\x81\x02\x82", "\x53\x30\x81\x42\x82"],
+    60 => ["\x53\x30\x81\x12\x82", "\x53\x30\x81\x52\x82"]
   }
 };
 
@@ -52,6 +52,7 @@ GetOptions
   'h|help'      => \my $help,
   'H|host=s'    => \(my $host = '192.168.178.52'),
   'i|input=s'   => \my $input,
+  'I|inverse'   => \my $inverse,
   'm|mute'      => \my $mute,
   'o|off'       => \my $off,
   'p|port=s'    => \(my $port = 50001),
@@ -67,8 +68,8 @@ if ($request) { say unpack 'H*', _command(pack('H*', $request)) }
 # Set input source and standby mode
 elsif ($input) {
   die "Unknown input: $input\n"          unless my $modes = $INPUT->{lc $input};
-  die "Unknown standby mode: $standby\n" unless my $req   = $modes->{$standby};
-  _command($req);
+  die "Unknown standby mode: $standby\n" unless my $table = $modes->{$standby};
+  _command($table->[$inverse ? 1 : 0]);
 }
 
 # Set volume
@@ -93,25 +94,41 @@ elsif ($status) {
 
   my $source  = _status($GET_SOURCE);
   my $sources = {
-    2  => ['Wifi',      '20 Minutes'],
-    9  => ['Bluetooth', '20 Minutes'],
-    10 => ['Aux',       '20 Minutes'],
-    11 => ['Optical',   '20 Minutes'],
-    15 => ['Bluetooth', '20 Minutes'],
-    18 => ['Wifi',      '60 Minutes'],
-    25 => ['Bluetooth', '60 Minutes'],
-    26 => ['Aux',       '60 Minutes'],
-    27 => ['Optical',   '60 Minutes'],
-    31 => ['Bluetooth', '60 Minutes'],
-    34 => ['Wifi',      'Never'],
-    41 => ['Bluetooth', 'Never'],
-    42 => ['Aux',       'Never'],
-    43 => ['Optical',   'Never'],
-    47 => ['Bluetooth', 'Never'],
+    2   => ['Wifi',      '20 Minutes', 'No'],
+    9   => ['Bluetooth', '20 Minutes', 'No'],
+    10  => ['Aux',       '20 Minutes', 'No'],
+    11  => ['Optical',   '20 Minutes', 'No'],
+    15  => ['Bluetooth', '20 Minutes', 'No'],
+    18  => ['Wifi',      '60 Minutes', 'No'],
+    25  => ['Bluetooth', '60 Minutes', 'No'],
+    26  => ['Aux',       '60 Minutes', 'No'],
+    27  => ['Optical',   '60 Minutes', 'No'],
+    31  => ['Bluetooth', '60 Minutes', 'No'],
+    34  => ['Wifi',      'Never',      'No'],
+    41  => ['Bluetooth', 'Never',      'No'],
+    42  => ['Aux',       'Never',      'No'],
+    43  => ['Optical',   'Never',      'No'],
+    47  => ['Bluetooth', 'Never',      'No'],
+    66  => ['Wifi',      '20 Minutes', 'Yes'],
+    73  => ['Bluetooth', '20 Minutes', 'Yes'],
+    74  => ['Aux',       '20 Minutes', 'Yes'],
+    75  => ['Optical',   '20 Minutes', 'Yes'],
+    79  => ['Bluetooth', '20 Minutes', 'Yes'],
+    82  => ['Wifi',      '60 Minutes', 'Yes'],
+    89  => ['Bluetooth', '60 Minutes', 'Yes'],
+    90  => ['Aux',       '60 Minutes', 'Yes'],
+    91  => ['Optical',   '60 Minutes', 'Yes'],
+    95  => ['Bluetooth', '60 Minutes', 'Yes'],
+    98  => ['Wifi',      'Never',      'Yes'],
+    105 => ['Bluetooth', 'Never',      'Yes'],
+    106 => ['Aux',       'Never',      'Yes'],
+    107 => ['Optical',   'Never',      'Yes'],
+    111 => ['Bluetooth', 'Never',      'Yes'],
   };
-  $source = $sources->{$source} || ['Unknown', 'Unknown'];
+  $source = $sources->{$source} || ['Unknown', 'Unknown', 'Unknown'];
   say "Input:   $source->[0]";
   say "Standby: $source->[1]";
+  say "Inverse: $source->[2]";
 }
 
 # Usage
@@ -148,7 +165,7 @@ Usage: kefctl [OPTIONS]
     kefctl -v 70
     kefctl --off
     kefctl -i optical
-    kefctl -i bluetooth -s 20
+    kefctl -i bluetooth -s 20 -I
     kefctl -H 192.168.179.52 -p 50001 -i aux
     kefctl -r 5330819b0b
 
@@ -157,6 +174,8 @@ Usage: kefctl [OPTIONS]
     -H, --host <host>           Speaker host, defaults to 192.169.178.52
     -i, --input <source>        Set input source to aux, bluetooth, optical or
                                 wifi
+    -I, --inverse               Inverse L/R speakers, this option can only be
+                                used together with the --input option
     -m, --mute                  Mute speakers, the speakers can be unmuted by
                                 setting a new volume with the --volume option
     -o, --off                   Turn speakers off, the KEF LSX can be turned

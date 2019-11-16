@@ -10,6 +10,16 @@
   speakers (Firmware version 4.1). Most features should also work fine with the
   **KEF LS50 Wireless**, but that has not been tested.
 
+## Features
+
+  * Turn speakers on and off
+  * Change input source
+  * Change volume
+  * Mute speakers
+  * Standby modes
+  * Inverse L/R speakers
+  * Check current speaker status
+
 ```
 Usage: kefctl [OPTIONS]
 
@@ -17,7 +27,7 @@ Usage: kefctl [OPTIONS]
     kefctl -v 70
     kefctl --off
     kefctl -i optical
-    kefctl -i bluetooth -s 20
+    kefctl -i bluetooth -s 20 -I
     kefctl -H 192.168.179.52 -p 50001 -i aux
     kefctl -r 5330819b0b
 
@@ -26,6 +36,8 @@ Usage: kefctl [OPTIONS]
     -H, --host <host>           Speaker host, defaults to 192.169.178.52
     -i, --input <source>        Set input source to aux, bluetooth, optical or
                                 wifi
+    -I, --inverse               Inverse L/R speakers, this option can only be
+                                used together with the --input option
     -m, --mute                  Mute speakers, the speakers can be unmuted by
                                 setting a new volume with the --volume option
     -o, --off                   Turn speakers off, the KEF LSX can be turned
