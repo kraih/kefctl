@@ -172,12 +172,12 @@ Usage: kefctl [OPTIONS]
     kefctl --off
     kefctl -i optical
     kefctl -i bluetooth -s 20 -I
-    kefctl -H 192.168.179.52 -p 50001 -i aux
+    kefctl -H 192.168.178.52 -p 50001 -i aux
     kefctl -r 5330819b0b
 
   Options:
     -h, --help                  Show this summary of available options
-    -H, --host <host>           Speaker host, defaults to 192.169.178.52
+    -H, --host <host>           Speaker host, defaults to 192.168.178.52
     -i, --input <source>        Set input source to aux, bluetooth, optical or
                                 wifi
     -I, --inverse               Inverse L/R speakers, this option can only be
