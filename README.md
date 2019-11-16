@@ -20,6 +20,7 @@
   * Inverse L/R speakers
   * Check current speaker status
 
+## Options
 ```
 Usage: kefctl [OPTIONS]
 
