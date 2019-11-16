@@ -142,12 +142,13 @@ sub _usage {
   say <<'EOF';
 Usage: kefctl [OPTIONS]
 
-    ./kefctl -v 70
-    ./kefctl --off
-    ./kefctl -i optical
-    ./kefctl -i bluetooth -s 20
-    ./kefctl -H 192.168.179.52 -p 50001 -i aux
-    ./kefctl -r 5330819b0b
+    kefctl -S
+    kefctl -v 70
+    kefctl --off
+    kefctl -i optical
+    kefctl -i bluetooth -s 20
+    kefctl -H 192.168.179.52 -p 50001 -i aux
+    kefctl -r 5330819b0b
 
   Options:
     -h, --help                  Show this summary of available options
