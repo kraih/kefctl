@@ -23,11 +23,11 @@
 ```
 Usage: kefctl [OPTIONS]
 
-    kefctl -S
+    kefctl -s
     kefctl -v 70
     kefctl --off
     kefctl -i optical
-    kefctl -i bluetooth -s 20 -I
+    kefctl -i bluetooth -S 20 -I
     kefctl -H 192.168.178.52 -p 50001 -i aux
     kefctl -r 5330819b0b
 
@@ -45,10 +45,10 @@ Usage: kefctl [OPTIONS]
     -p, --port <port>           Speaker port, defaults to 50001
     -r, --request <hex>         Send raw request in hex format and show response
                                 (very useful for testing speaker features)
-    -s, --standby <minutes>     Set standby time to 20, 60 or 0 (to turn standby
+    -s, --status                Show current speaker status
+    -S, --standby <minutes>     Set standby time to 20, 60 or 0 (to turn standby
                                 off), this option can only be used together with
                                 the --input option
-    -S, --status                Show current speaker status
     -u, --unmute                Unmute speakers
     -v, --volume <percentage>   Set volume to a percentage value of 0-100, be
                                 aware that every input source has its own volume
