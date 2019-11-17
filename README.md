@@ -15,7 +15,7 @@
   * Turn speakers on and off
   * Change input source
   * Change volume
-  * Mute speakers
+  * Mute and unmute speakers
   * Standby modes
   * Inverse L/R speakers
   * Check current speaker status
@@ -38,8 +38,7 @@ Usage: kefctl [OPTIONS]
                                 wifi
     -I, --inverse               Inverse L/R speakers, this option can only be
                                 used together with the --input option
-    -m, --mute                  Mute speakers, the speakers can be unmuted by
-                                setting a new volume with the --volume option
+    -m, --mute                  Mute speakers
     -o, --off                   Turn speakers off, the KEF LSX can be turned
                                 back on by setting an input source with the
                                 --input option
@@ -50,6 +49,7 @@ Usage: kefctl [OPTIONS]
                                 off), this option can only be used together with
                                 the --input option
     -S, --status                Show current speaker status
+    -u, --unmute                Unmute speakers
     -v, --volume <percentage>   Set volume to a percentage value of 0-100, be
                                 aware that every input source has its own volume
                                 setting
