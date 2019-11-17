@@ -40,7 +40,7 @@ Usage: kefctl [OPTIONS]
                                 wifi
     -I, --inverse               Inverse L/R speakers, this option can only be
                                 used together with the --input option
-    -L, --lower <percentage>    Lower volume by X%
+    -L, --lower <percentage>    Lower volume by X percent
     -m, --mute                  Mute speakers
     -o, --off                   Turn speakers off, the KEF LSX can be turned
                                 back on by setting an input source with the
@@ -48,7 +48,7 @@ Usage: kefctl [OPTIONS]
     -p, --port <port>           Speaker port, defaults to 50001
     -r, --request <hex>         Send raw request in hex format and show response
                                 (very useful for testing speaker features)
-    -R, --raise <percentage>    Raise volume by X%
+    -R, --raise <percentage>    Raise volume by X percent
     -s, --status                Show current speaker status
     -S, --standby <minutes>     Set standby time to 20, 60 or 0 (to turn standby
                                 off), this option can only be used together with
