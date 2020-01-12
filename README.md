@@ -10,6 +10,9 @@
   speakers (Firmware version 4.1). Most features should also work fine with the
   **KEF LS50 Wireless**, but that has not been tested.
 
+  Turning the KEF LS50 Wireless on might only work with the newer revision,
+  serial number after LS50W13074K24L/R2G.
+
 ## Features
 
   * Turn speakers on and off
