@@ -68,7 +68,7 @@ Usage: kefctl [OPTIONS]
 
 ## Copyright and License
 
-  Copyright (C) 2019, Sebastian Riedel.
+  Copyright (C) 2019-2020, Sebastian Riedel.
 
   This program is free software, you can redistribute it and/or modify it under
   the terms of the Artistic License version 2.0
