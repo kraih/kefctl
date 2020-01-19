@@ -38,6 +38,11 @@ my $INPUT      = {
     20 => ["\x53\x30\x81\x0b", "\x53\x30\x81\x4b"],
     60 => ["\x53\x30\x81\x1b", "\x53\x30\x81\x5b"]
   },
+  usb => {
+    0  => ["\x53\x30\x81\x2c", "\x53\x30\x81\x6c"],
+    20 => ["\x53\x30\x81\x0c", "\x53\x30\x81\x4c"],
+    60 => ["\x53\x30\x81\x1c", "\x53\x30\x81\x5c"]
+  },
   wifi => {
     0  => ["\x53\x30\x81\x22", "\x53\x30\x81\x62"],
     20 => ["\x53\x30\x81\x02", "\x53\x30\x81\x42"],
@@ -133,6 +138,7 @@ elsif ($status) {
   my $input_bits = substr($source_bits, 4, 4);
   my $input      = 'Unknown';
   if    ($input_bits eq '0010') { $input = 'Wifi' }
+  elsif ($input_bits eq '1100') { $input = 'USB' }
   elsif ($input_bits eq '1001') { $input = 'Bluetooth (paired)' }
   elsif ($input_bits eq '1111') { $input = 'Bluetooth (unpaired)' }
   elsif ($input_bits eq '1010') { $input = 'Aux' }
@@ -190,8 +196,8 @@ Usage: kefctl [OPTIONS]
   Options:
     -h, --help                  Show this summary of available options
     -H, --host <host>           Speaker host, defaults to 192.168.178.52
-    -i, --input <source>        Set input source to aux, bluetooth, optical or
-                                wifi
+    -i, --input <source>        Set input source to aux, bluetooth, optical,
+                                usb or wifi
     -I, --inverse               Inverse L/R speakers, this option can only be
                                 used together with the --input option
     -L, --lower <percentage>    Lower volume by X percent
