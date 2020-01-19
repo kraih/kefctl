@@ -65,10 +65,14 @@ GetOptions
   's|status'    => \my $status,
   'S|standby=i' => \(my $standby = 60),
   'u|unmute'    => \my $unmute,
-  'v|volume=i'  => \my $volume;
+  'v|volume=i'  => \my $volume,
+  'version'     => \my $version;
 
 # Usage
 if ($help) { _usage() }
+
+# Version
+elsif ($version) { say "kefctl $VERSION" }
 
 # Arbitrary request in hex (for testing)
 elsif ($request) { say unpack 'H*', _command(pack('H*', $request)) }
@@ -217,6 +221,7 @@ Usage: kefctl [OPTIONS]
     -v, --volume <percentage>   Set volume to a percentage value of 0-100, be
                                 aware that every input source has its own volume
                                 setting
+        --version               Show version
 
   You can also set the KEFCTL_DEBUG environment variable to get diagnostics
   information printed to STDERR.
