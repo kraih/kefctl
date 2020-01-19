@@ -39,8 +39,8 @@ Usage: kefctl [OPTIONS]
   Options:
     -h, --help                  Show this summary of available options
     -H, --host <host>           Speaker host, defaults to 192.168.178.52
-    -i, --input <source>        Set input source to aux, bluetooth, optical or
-                                wifi
+    -i, --input <source>        Set input source to aux, bluetooth, optical,
+                                usb or wifi
     -I, --inverse               Inverse L/R speakers, this option can only be
                                 used together with the --input option
     -L, --lower <percentage>    Lower volume by X percent
@@ -60,6 +60,7 @@ Usage: kefctl [OPTIONS]
     -v, --volume <percentage>   Set volume to a percentage value of 0-100, be
                                 aware that every input source has its own volume
                                 setting
+        --version               Show version
 
   You can also set the KEFCTL_DEBUG environment variable to get diagnostics
   information printed to STDERR.
