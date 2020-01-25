@@ -44,7 +44,7 @@ Usage: kefctl [OPTIONS]
                                 used together with the --input option
     -L, --lower <percentage>    Lower volume by X percent
     -m, --mute                  Mute speakers
-    -o, --off                   Turn speakers off, the KEF LSX can be turned
+    -o, --off                   Turn speakers off, the speakers can be turned
                                 back on by setting an input source with the
                                 --input option
     -p, --port <port>           Speaker port, defaults to 50001
