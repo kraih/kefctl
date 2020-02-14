@@ -1,0 +1,179 @@
+#!/usr/bin/perl
+#
+# Copyright (C) 2020, Sebastian Riedel.
+#
+# This program is free software, you can redistribute it and/or modify it under
+# the terms of the Artistic License version 2.0
+#
+use strict;
+use warnings;
+use 5.10.1;
+
+use Getopt::Long 'GetOptions';
+use IO::Socket::INET;
+
+use constant DEBUG => $ENV{KEFDSP_DEBUG} || 0;
+
+our $VERSION = '0.1';
+
+my $GET_MODE    = "\x47\x27\x80\x40";
+my $GET_DESK_DB = "\x47\x28\x80\x92";
+my $GET_WALL_DB = "\x47\x29\x80\x92";
+
+# Need to figure out all the mode stuff and set bits individually
+my $MODE = {
+  'onoff'  => "\x53\x27\x81\xad",
+  'offon'  => "\x53\x27\x81\xae",
+  'onon'   => "\x53\x27\x81\xaf",
+  'offoff' => "\x53\x27\x81\xac"
+};
+
+my $DESK_WALL_DB = [
+  '6.0', '5.5', '5.0', '4.5', '4.0', '3.5', '3.0', '2.5',
+  '2.0', '1.5', '1.0', '0.5', '0'
+];
+
+# App requests these after changes (remaining unknown)
+# 473080d9
+# 472f80f0
+# 4725806c
+# 473d8027
+# 47298084
+
+Getopt::Long::Configure(qw(default no_auto_abbrev no_ignore_case));
+GetOptions
+  'd|desk=s'    => \my $desk,
+  'D|desk-db=s' => \my $desk_db,
+  'h|help'      => \my $help,
+  'H|host=s'    => \(my $host = '192.168.178.66'),
+  'p|port=s'    => \(my $port = 50001),
+  'r|request=s' => \my $request,
+  's|status'    => \my $status,
+  'version'     => \my $version,
+  'w|wall=s'    => \my $wall,
+  'W|wall-db=s' => \my $wall_db;
+
+# Usage
+if ($help) { _usage() }
+
+# Version
+elsif ($version) { say "kefdsp $VERSION" }
+
+# Arbitrary request in hex (for testing)
+elsif ($request) { say unpack 'H*', _command(pack('H*', $request)) }
+
+# Desk/Wall modes
+elsif ($desk && $wall) {
+  die "Unknown value: $desk + $wall\n"
+    unless my $target = $MODE->{lc $desk . $wall};
+  _command($target);
+}
+
+# Desk dB
+elsif (defined $desk_db) {
+  die "Invalid value: $desk_db\n" unless $desk_db =~ /^-?(\d(?:\.\d)?)$/;
+  die "Unknown value: $desk_db\n" unless my $target = _desk_wall_db($1);
+  _command("\x53\x28\x81" . pack('C', $target));
+}
+
+# Wall dB
+elsif (defined $wall_db) {
+  die "Invalid value: $wall_db\n" unless $wall_db =~ /^-?(\d(?:\.\d)?)$/;
+  die "Unknown value: $wall_db\n" unless my $target = _desk_wall_db($1);
+  _command("\x53\x29\x81" . pack('C', $target));
+}
+
+elsif ($status) {
+  my $mode_bits = unpack 'B*', substr(_command($GET_MODE), 3, 1);
+  warn "*** MODE: $mode_bits\n" if DEBUG;
+  my $desk_mode        = substr($mode_bits, 7, 1) ? 'On' : 'Off';
+  my $wall_mode        = substr($mode_bits, 6, 1) ? 'On' : 'Off';
+  my $phase_correction = substr($mode_bits, 5, 1) ? 'On' : 'Off';
+  my $high_pass        = substr($mode_bits, 4, 1) ? 'On' : 'Off';
+  my $sub_polarity     = substr($mode_bits, 1, 1) ? '-'  : '+';
+
+  my $sub_ext_bits = substr($mode_bits, 2, 2);
+  my $sub_ext      = 'Unknown';
+  if    ($sub_ext_bits eq '00') { $sub_ext = 'Standard' }
+  elsif ($sub_ext_bits eq '10') { $sub_ext = 'Less' }
+  elsif ($sub_ext_bits eq '01') { $sub_ext = 'Extra' }
+
+  my $desk_db_int = unpack 'C', substr(_command($GET_DESK_DB), 3, 1);
+  my $desk_db     = $DESK_WALL_DB->[$desk_db_int - 128] // 'Unknown';
+
+  my $wall_db_int = unpack 'C', substr(_command($GET_WALL_DB), 3, 1);
+  my $wall_db     = $DESK_WALL_DB->[$wall_db_int - 128] // 'Unknown';
+
+  say "Desk mode:        $desk_mode (-$desk_db dB)";
+  say "Wall mode:        $wall_mode (-$wall_db dB)";
+  say "Phase correction: $phase_correction";
+  say "High-pass mode:   $high_pass";
+  say "Sub polarity:     $sub_polarity";
+  say "Bass extension:   $sub_ext";
+}
+
+# Usage
+else { _usage() }
+
+sub _command {
+  my $req = shift;
+
+  state $sock = IO::Socket::INET->new(
+    PeerHost => $host,
+    PeerPort => $port,
+    Type     => SOCK_STREAM,
+  ) or die "Cannot construct socket: $@";
+
+  warn "*** REQ: @{[unpack 'H*', $req]}\n" if DEBUG;
+  $sock->syswrite($req) or die "Cannot write command: $!";
+  die "Could not read command response: $!"
+    unless defined(my $read = $sock->sysread(my $res, 1024, 0));
+  warn "*** RES: @{[unpack 'H*', $res]}\n" if DEBUG;
+
+  return $res;
+}
+
+sub _desk_wall_db {
+  my $val = shift;
+
+  my $target;
+  for my $i (0 .. $#$DESK_WALL_DB) {
+    next unless $val eq $DESK_WALL_DB->[$i];
+    $target = 128 + $i;
+    last;
+  }
+
+  return $target;
+}
+
+sub _usage {
+  say <<'EOF';
+Usage: kefdsp [OPTIONS]
+
+    kefdsp -d on -w on
+    kefdsp -D 3.5
+    kefdsp -W 6.0
+    kefdsp -H 192.168.178.52 -p 50001 -d off
+    kefdsp -r 5330819b0b
+
+  Options:
+    -d, --desk <mode>       Turn desk mode "on" or "off", needs to be set
+                            together with wall mode
+    -D, --desk-db <db>      Set dB value for desk mode, between 0 and -6.0 in
+                            steps of 0.5
+    -h, --help              Show this summary of available options
+    -H, --host <host>       Speaker host, defaults to 192.168.178.66
+    -p, --port <port>       Speaker port, defaults to 50001
+    -r, --request <hex>     Send raw request in hex format and show response
+                            (very useful for testing speaker features)
+    -s, --status            Show current speaker status
+        --version           Show version
+    -w, --wall <mode>       Turn wall mode "on" or "off", needs to be set
+                            together with desk mode
+    -W, --wall-db <db>      Set dB value for wall mode, between 0 and -6.0 in
+                            steps of 0.5
+
+  You can also set the KEFCTL_DEBUG environment variable to get diagnostics
+  information printed to STDERR.
+EOF
+}
