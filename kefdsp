@@ -16,9 +16,10 @@ use constant DEBUG => $ENV{KEFDSP_DEBUG} || 0;
 
 our $VERSION = '0.1';
 
-my $GET_MODE    = "\x47\x27\x80\x40";
-my $GET_DESK_DB = "\x47\x28\x80\x92";
-my $GET_WALL_DB = "\x47\x29\x80\x92";
+my $GET_MODE      = "\x47\x27\x80\x40";
+my $GET_DESK_DB   = "\x47\x28\x80\x92";
+my $GET_WALL_DB   = "\x47\x29\x80\x92";
+my $GET_TREBLE_DB = "\x47\x2a\x80\x40";
 
 # Need to figure out all the mode stuff and set bits individually
 my $MODE = {
@@ -32,6 +33,8 @@ my $DESK_WALL_DB = [
   '6.0', '5.5', '5.0', '4.5', '4.0', '3.5', '3.0', '2.5',
   '2.0', '1.5', '1.0', '0.5', '0'
 ];
+my $TREBLE_DB
+  = ['-2.0', '-1.5', '-1.0', '-0.5', '0', '+0.5', '+1.0', '+1.5', '+2.0'];
 
 # App requests these after changes (remaining unknown)
 # 473080d9
@@ -104,8 +107,13 @@ elsif ($status) {
   my $wall_db_int = unpack 'C', substr(_command($GET_WALL_DB), 3, 1);
   my $wall_db     = $DESK_WALL_DB->[$wall_db_int - 128] // 'Unknown';
 
+  my $treble_db_int = unpack 'C', substr(_command($GET_TREBLE_DB), 3, 1);
+  warn "$treble_db_int\n";
+  my $treble_db = $TREBLE_DB->[$treble_db_int - 128] // 'Unknown';
+
   say "Desk mode:        $desk_mode (-$desk_db dB)";
   say "Wall mode:        $wall_mode (-$wall_db dB)";
+  say "Treble trim:      $treble_db dB";
   say "Phase correction: $phase_correction";
   say "High-pass mode:   $high_pass";
   say "Sub polarity:     $sub_polarity";
