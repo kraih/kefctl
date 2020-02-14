@@ -24,13 +24,12 @@ my $GET_HIGH_HZ   = "\x47\x2b\x80\x40";
 my $GET_LOW_HZ    = "\x47\x2c\x80\x40";
 my $GET_SUB_DB    = "\x47\x2d\x80\x40";
 
-# Need to figure out all the mode stuff and set bits individually
-#my $MODE = {
-#  'onoff'  => "\x53\x27\x81\xad",
-#  'offon'  => "\x53\x27\x81\xae",
-#  'onon'   => "\x53\x27\x81\xaf",
-#  'offoff' => "\x53\x27\x81\xac"
-#};
+# TODO: Add flags for setting all the bits in the 532781XX frame (decoding is
+# already finished in speaker status)
+# wall mode:      532781ad
+# desk mode:      532781ae
+# desk+wall mode: 532781af
+# neither:        532781ac
 
 my $DESK_WALL_DB = [
   '-6.0', '-5.5', '-5.0', '-4.5', '-4.0', '-3.5', '-3.0', '-2.5',
