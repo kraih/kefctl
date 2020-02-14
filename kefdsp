@@ -202,7 +202,7 @@ Usage: kefdsp [OPTIONS]
     -p, --port <port>      Speaker port, defaults to 50001
     -r, --request <hex>    Send raw request in hex format and show response
                            (very useful for testing speaker features)
-    -s, --status           Show current speaker status
+    -s, --status           Show current DSP status
         --version          Show version
     -t, --treble <db>      Set dB value for treble trim, between -2.0 and +2.0
                            in steps of 0.5.
