@@ -24,13 +24,6 @@ my $GET_HIGH_HZ   = "\x47\x2b\x80\x40";
 my $GET_LOW_HZ    = "\x47\x2c\x80\x40";
 my $GET_SUB_DB    = "\x47\x2d\x80\x40";
 
-# TODO: Add flags for setting all the bits in the 532781XX frame (decoding is
-# already finished in speaker status)
-# wall mode:      532781ad
-# desk mode:      532781ae
-# desk+wall mode: 532781af
-# neither:        532781ac
-
 my $DESK_WALL_DB = [
   '-6.0', '-5.5', '-5.0', '-4.5', '-4.0', '-3.5', '-3.0', '-2.5',
   '-2.0', '-1.5', '-1.0', '-0.5', '0'
@@ -52,18 +45,24 @@ my $SUB_DB = [
 
 Getopt::Long::Configure(qw(default no_auto_abbrev no_ignore_case));
 GetOptions
-  'd|desk=s'      => \my $desk,
-  'g|sub-gain=s'  => \my $gain,
-  'h|help'        => \my $help,
-  'H|host=s'      => \(my $host = '192.168.178.66'),
-  'i|high-pass=s' => \my $high,
-  'l|low-pass=s'  => \my $low,
-  'p|port=s'      => \(my $port = 50001),
-  'r|request=s'   => \my $request,
-  's|status'      => \my $status,
-  't|treble=s'    => \my $treble,
-  'version'       => \my $version,
-  'W|wall=s'      => \my $wall;
+  'd|desk=s'         => \my $desk,
+  'D|desk-mode=s'    => \my $desk_mode,
+  'e|sub-ext=s'      => \my $ext,
+  'g|sub-gain=s'     => \my $gain,
+  'h|help'           => \my $help,
+  'H|host=s'         => \(my $host = '192.168.178.66'),
+  'i|high=s'         => \my $high,
+  'I|high-pass=s'    => \my $high_pass,
+  'l|low=s'          => \my $low,
+  'p|port=s'         => \(my $port = 50001),
+  'P|phase=s'        => \my $phase,
+  'r|request=s'      => \my $request,
+  's|status'         => \my $status,
+  'S|sub-polarity=s' => \my $pol,
+  't|treble=s'       => \my $treble,
+  'version'          => \my $version,
+  'w|wall=s'         => \my $wall,
+  'W|wall-mode=s'    => \my $wall_mode;
 
 # Usage
 if ($help) { _usage() }
@@ -73,6 +72,26 @@ elsif ($version) { say "kefdsp $VERSION" }
 
 # Arbitrary request in hex (for testing)
 elsif ($request) { say unpack 'H*', _command(pack('H*', $request)) }
+
+# Mode changes
+elsif ($desk_mode || $wall_mode || $phase || $high_pass || $pol || $ext) {
+  my $mode_bits = unpack 'B*', substr(_command($GET_MODE), 3, 1);
+
+  $mode_bits = _switch($mode_bits, 7, $desk_mode);
+  $mode_bits = _switch($mode_bits, 6, $wall_mode);
+  $mode_bits = _switch($mode_bits, 5, $phase);
+  $mode_bits = _switch($mode_bits, 4, $high_pass);
+  $mode_bits = _switch($mode_bits, 1, $pol);
+
+  if ($ext && ($ext = lc $ext)) {
+    if    ($ext eq 'standard') { substr $mode_bits, 2, 2, '00' }
+    elsif ($ext eq 'less')     { substr $mode_bits, 2, 2, '10' }
+    elsif ($ext eq 'extra')    { substr $mode_bits, 2, 2, '01' }
+  }
+
+  my $mode = pack 'B*', $mode_bits;
+  _command("\x53\x27\x81$mode");
+}
 
 # Desk
 elsif (defined $desk) { _slider("\x28", $DESK_WALL_DB, $desk) }
@@ -129,11 +148,11 @@ elsif ($status) {
   say "Wall mode:        $wall_mode ($wall_db dB)";
   say "Treble trim:      $treble_db dB";
   say "Phase correction: $phase_correction";
+  say "Bass extension:   $sub_ext";
   say "High-pass mode:   $high_pass ($high_hz Hz)";
   say "Sub out low-pass: $low_hz Hz";
   say "Sub gain:         $sub_db dB";
   say "Sub polarity:     $sub_polarity";
-  say "Bass extension:   $sub_ext";
 }
 
 # Usage
@@ -176,38 +195,62 @@ sub _slider {
   _command("\x53$op\x81" . pack('C', $to));
 }
 
+sub _switch {
+  my ($bits, $offset, $val) = @_;
+
+  return $bits unless $val;
+
+  $val = lc $val;
+  if    ($val eq 'on' || $val eq '-')  { substr $bits, $offset, 1, '1' }
+  elsif ($val eq 'off' || $val eq '+') { substr $bits, $offset, 1, '0' }
+  else                                 { die "Unknown value: $val\n" }
+
+  return $bits;
+}
+
 sub _usage {
   say <<'EOF';
 Usage: kefdsp [OPTIONS]
 
+    kefdsp --desk-mode on
+    kefdsp --wall-mode off
     kefdsp --desk -3.5
     kefdsp --wall -6.0
     kefdsp --treble 0
-    kefdsp --high-pass 95
+    kefdsp --high 95
+    kefdsp --low 80
     kefdsp -l 80
+    kefdsp -e less
     kefdsp -H 192.168.178.52 -p 50001 -g +5.0
     kefdsp -r 5330819b0bb
 
   Options:
-    -d, --desk <db>        Set dB value for desk mode, between -6.0 and 0 in
-                           steps of 0.5
-    -g, --sub-gain <db>    Set dB value for sub gain, between -10.0 and +10.0 in
-                           steps of 1.0
-    -h, --help             Show this summary of available options
-    -H, --host <host>      Speaker host, defaults to 192.168.178.66
-    -i, --high-pass <hz>   Set Hz value for high-pass mode, between 50 and 120
-                           in steps of 5
-    -l, --low-pass <hz>    Set Hz value for sub out low-pass, between 40 and 250
-                           in steps of 5
-    -p, --port <port>      Speaker port, defaults to 50001
-    -r, --request <hex>    Send raw request in hex format and show response
-                           (very useful for testing speaker features)
-    -s, --status           Show current DSP status
-        --version          Show version
-    -t, --treble <db>      Set dB value for treble trim, between -2.0 and +2.0
-                           in steps of 0.5.
-    -w, --wall <db>        Set dB value for wall mode, between -6.0 and 0 in
-                           steps of 0.5
+    -d, --desk <db>             Set dB value for desk mode, between -6.0 and 0
+                                in steps of 0.5
+    -D, --desk-mode <mode>      Set desk mode on or off
+    -e, --sub-ext <mode>        Set sub extension mode to less, standard or
+                                extra
+    -g, --sub-gain <db>         Set dB value for sub gain, between -10.0 and
+                                +10.0 in steps of 1.0
+    -h, --help                  Show this summary of available options
+    -H, --host <host>           Speaker host, defaults to 192.168.178.66
+    -i, --high <hz>             Set Hz value for high-pass mode, between 50 and
+                                120 in steps of 5
+    -I, --high-pass <mode>      Set high pass mode on or off
+    -l, --low <hz>              Set Hz value for sub out low-pass, between 40
+                                and 250 in steps of 5
+    -p, --port <port>           Speaker port, defaults to 50001
+    -P, --phase <mode>          Set phase correction on or off
+    -r, --request <hex>         Send raw request in hex format and show response
+                                (very useful for testing speaker features)
+    -s, --status                Show current DSP status
+    -S, --sub-polarity <mode>   Set sub polarity to - or +
+    -t, --treble <db>           Set dB value for treble trim, between -2.0 and
+                                +2.0 in steps of 0.5.
+    -w, --wall <db>             Set dB value for wall mode, between -6.0 and 0
+        --version               Show version
+                                in steps of 0.5
+    -W, --wall-mode <mode>      Set wall mode on or off
 
   You can also set the KEFDSP_DEBUG environment variable to get diagnostics
   information printed to STDERR.

@@ -68,34 +68,45 @@ Usage: kefctl [OPTIONS]
   ```
 Usage: kefdsp [OPTIONS]
 
+    kefdsp --desk-mode on
+    kefdsp --wall-mode off
     kefdsp --desk -3.5
     kefdsp --wall -6.0
     kefdsp --treble 0
-    kefdsp --high-pass 95
+    kefdsp --high 95
+    kefdsp --low 80
     kefdsp -l 80
+    kefdsp -e less
     kefdsp -H 192.168.178.52 -p 50001 -g +5.0
     kefdsp -r 5330819b0bb
 
   Options:
-    -d, --desk <db>        Set dB value for desk mode, between -6.0 and 0 in
-                           steps of 0.5
-    -g, --sub-gain <db>    Set dB value for sub gain, between -10.0 and +10.0 in
-                           steps of 1.0
-    -h, --help             Show this summary of available options
-    -H, --host <host>      Speaker host, defaults to 192.168.178.66
-    -i, --high-pass <hz>   Set Hz value for high-pass mode, between 50 and 120
-                           in steps of 5
-    -l, --low-pass <hz>    Set Hz value for sub out low-pass, between 40 and 250
-                           in steps of 5
-    -p, --port <port>      Speaker port, defaults to 50001
-    -r, --request <hex>    Send raw request in hex format and show response
-                           (very useful for testing speaker features)
-    -s, --status           Show current DSP status
-        --version          Show version
-    -t, --treble <db>      Set dB value for treble trim, between -2.0 and +2.0
-                           in steps of 0.5.
-    -w, --wall <db>        Set dB value for wall mode, between -6.0 and 0 in
-                           steps of 0.5
+    -d, --desk <db>             Set dB value for desk mode, between -6.0 and 0
+                                in steps of 0.5
+    -D, --desk-mode <mode>      Set desk mode on or off
+    -e, --sub-ext <mode>        Set sub extension mode to less, standard or
+                                extra
+    -g, --sub-gain <db>         Set dB value for sub gain, between -10.0 and
+                                +10.0 in steps of 1.0
+    -h, --help                  Show this summary of available options
+    -H, --host <host>           Speaker host, defaults to 192.168.178.66
+    -i, --high <hz>             Set Hz value for high-pass mode, between 50 and
+                                120 in steps of 5
+    -I, --high-pass <mode>      Set high pass mode on or off
+    -l, --low <hz>              Set Hz value for sub out low-pass, between 40
+                                and 250 in steps of 5
+    -p, --port <port>           Speaker port, defaults to 50001
+    -P, --phase <mode>          Set phase correction on or off
+    -r, --request <hex>         Send raw request in hex format and show response
+                                (very useful for testing speaker features)
+    -s, --status                Show current DSP status
+    -S, --sub-polarity <mode>   Set sub polarity to - or +
+    -t, --treble <db>           Set dB value for treble trim, between -2.0 and
+                                +2.0 in steps of 0.5.
+    -w, --wall <db>             Set dB value for wall mode, between -6.0 and 0
+        --version               Show version
+                                in steps of 0.5
+    -W, --wall-mode <mode>      Set wall mode on or off
 
   You can also set the KEFDSP_DEBUG environment variable to get diagnostics
   information printed to STDERR.
