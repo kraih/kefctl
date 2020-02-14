@@ -21,6 +21,7 @@
   * Standby modes
   * Inverse L/R speakers
   * Check current speaker status
+  * Configure DSP settings
 
 ```
 Usage: kefctl [OPTIONS]
@@ -62,6 +63,41 @@ Usage: kefctl [OPTIONS]
         --version               Show version
 
   You can also set the KEFCTL_DEBUG environment variable to get diagnostics
+  information printed to STDERR.
+  ```
+  ```
+Usage: kefdsp [OPTIONS]
+
+    kefdsp --desk -3.5
+    kefdsp --wall -6.0
+    kefdsp --treble 0
+    kefdsp --high-pass 95
+    kefdsp -l 80
+    kefdsp -H 192.168.178.52 -p 50001 -g +5.0
+    kefdsp -r 5330819b0bb
+
+  Options:
+    -d, --desk <db>        Set dB value for desk mode, between -6.0 and 0 in
+                           steps of 0.5
+    -g, --sub-gain <db>    Set dB value for sub gain, between -10.0 and +10.0 in
+                           steps of 1.0
+    -h, --help             Show this summary of available options
+    -H, --host <host>      Speaker host, defaults to 192.168.178.66
+    -i, --high-pass <hz>   Set Hz value for high-pass mode, between 50 and 120
+                           in steps of 5
+    -l, --low-pass <hz>    Set Hz value for sub out low-pass, between 40 and 250
+                           in steps of 5
+    -p, --port <port>      Speaker port, defaults to 50001
+    -r, --request <hex>    Send raw request in hex format and show response
+                           (very useful for testing speaker features)
+    -s, --status           Show current speaker status
+        --version          Show version
+    -t, --treble <db>      Set dB value for treble trim, between -2.0 and +2.0
+                           in steps of 0.5.
+    -w, --wall <db>        Set dB value for wall mode, between -6.0 and 0 in
+                           steps of 0.5
+
+  You can also set the KEFDSP_DEBUG environment variable to get diagnostics
   information printed to STDERR.
   ```
 

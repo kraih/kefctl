@@ -180,16 +180,16 @@ sub _usage {
   say <<'EOF';
 Usage: kefdsp [OPTIONS]
 
-    kefdsp -d -3.5
-    kefdsp -w -6.0
-    kefdsp -t 0
-    kefdsp -high-pass 95
+    kefdsp --desk -3.5
+    kefdsp --wall -6.0
+    kefdsp --treble 0
+    kefdsp --high-pass 95
     kefdsp -l 80
     kefdsp -H 192.168.178.52 -p 50001 -g +5.0
-    kefdsp -r 5330819b0b
+    kefdsp -r 5330819b0bb
 
   Options:
-    -d, --desk <db>        Set dB value for desk mode, between 0 and -6.0 in
+    -d, --desk <db>        Set dB value for desk mode, between -6.0 and 0 in
                            steps of 0.5
     -g, --sub-gain <db>    Set dB value for sub gain, between -10.0 and +10.0 in
                            steps of 1.0
@@ -206,10 +206,10 @@ Usage: kefdsp [OPTIONS]
         --version          Show version
     -t, --treble <db>      Set dB value for treble trim, between -2.0 and +2.0
                            in steps of 0.5.
-    -w, --wall <db>        Set dB value for wall mode, between 0 and -6.0 in
+    -w, --wall <db>        Set dB value for wall mode, between -6.0 and 0 in
                            steps of 0.5
 
-  You can also set the KEFCTL_DEBUG environment variable to get diagnostics
+  You can also set the KEFDSP_DEBUG environment variable to get diagnostics
   information printed to STDERR.
 EOF
 }
