@@ -77,11 +77,11 @@ elsif ($request) { say unpack 'H*', _command(pack('H*', $request)) }
 elsif ($desk_mode || $wall_mode || $phase || $high_pass || $pol || $ext) {
   my $mode_bits = unpack 'B*', substr(_command($GET_MODE), 3, 1);
 
-  $mode_bits = _switch($mode_bits, 7, $desk_mode);
-  $mode_bits = _switch($mode_bits, 6, $wall_mode);
-  $mode_bits = _switch($mode_bits, 5, $phase);
-  $mode_bits = _switch($mode_bits, 4, $high_pass);
-  $mode_bits = _switch($mode_bits, 1, $pol);
+  $mode_bits = _set_switch($mode_bits, 7, $desk_mode);
+  $mode_bits = _set_switch($mode_bits, 6, $wall_mode);
+  $mode_bits = _set_switch($mode_bits, 5, $phase);
+  $mode_bits = _set_switch($mode_bits, 4, $high_pass);
+  $mode_bits = _set_switch($mode_bits, 1, $pol);
 
   if ($ext && ($ext = lc $ext)) {
     if    ($ext eq 'standard') { substr $mode_bits, 2, 2, '00' }
@@ -94,22 +94,22 @@ elsif ($desk_mode || $wall_mode || $phase || $high_pass || $pol || $ext) {
 }
 
 # Desk
-elsif (defined $desk) { _slider("\x28", $DESK_WALL_DB, $desk) }
+elsif (defined $desk) { _set_slider("\x28", $DESK_WALL_DB, $desk) }
 
 # Wall
-elsif (defined $wall) { _slider("\x29", $DESK_WALL_DB, $wall) }
+elsif (defined $wall) { _set_slider("\x29", $DESK_WALL_DB, $wall) }
 
 # Treble
-elsif (defined $treble) { _slider("\x2a", $TREBLE_DB, $treble) }
+elsif (defined $treble) { _set_slider("\x2a", $TREBLE_DB, $treble) }
 
 # High-pass
-elsif (defined $high) { _slider("\x2b", $HIGH_HZ, $high) }
+elsif (defined $high) { _set_slider("\x2b", $HIGH_HZ, $high) }
 
 # Low-pass
-elsif (defined $low) { _slider("\x2c", $LOW_HZ, $low) }
+elsif (defined $low) { _set_slider("\x2c", $LOW_HZ, $low) }
 
 # Sub gain
-elsif (defined $gain) { _slider("\x2d", $SUB_DB, $gain) }
+elsif (defined $gain) { _set_slider("\x2d", $SUB_DB, $gain) }
 
 # Status information (should be complete)
 elsif ($status) {
@@ -127,23 +127,12 @@ elsif ($status) {
   elsif ($sub_ext_bits eq '10') { $sub_ext = 'Less' }
   elsif ($sub_ext_bits eq '01') { $sub_ext = 'Extra' }
 
-  my $desk_db_int = unpack 'C', substr(_command($GET_DESK_DB), 3, 1);
-  my $desk_db     = $DESK_WALL_DB->[$desk_db_int - 128] // 'Unknown';
-
-  my $wall_db_int = unpack 'C', substr(_command($GET_WALL_DB), 3, 1);
-  my $wall_db     = $DESK_WALL_DB->[$wall_db_int - 128] // 'Unknown';
-
-  my $treble_db_int = unpack 'C', substr(_command($GET_TREBLE_DB), 3, 1);
-  my $treble_db     = $TREBLE_DB->[$treble_db_int - 128] // 'Unknown';
-
-  my $high_hz_int = unpack 'C', substr(_command($GET_HIGH_HZ), 3, 1);
-  my $high_hz     = $HIGH_HZ->[$high_hz_int - 128] // 'Unknown';
-
-  my $low_hz_int = unpack 'C', substr(_command($GET_LOW_HZ), 3, 1);
-  my $low_hz     = $LOW_HZ->[$low_hz_int - 128] // 'Unknown';
-
-  my $sub_db_int = unpack 'C', substr(_command($GET_SUB_DB), 3, 1);
-  my $sub_db     = $SUB_DB->[$sub_db_int - 128] // 'Unknown';
+  my $desk_db   = _get_slider($GET_DESK_DB,   $DESK_WALL_DB);
+  my $wall_db   = _get_slider($GET_WALL_DB,   $DESK_WALL_DB);
+  my $treble_db = _get_slider($GET_TREBLE_DB, $TREBLE_DB);
+  my $high_hz   = _get_slider($GET_HIGH_HZ,   $HIGH_HZ);
+  my $low_hz    = _get_slider($GET_LOW_HZ,    $LOW_HZ);
+  my $sub_db    = _get_slider($GET_SUB_DB,    $SUB_DB);
 
   say "Desk mode:        $desk_mode ($desk_db dB)";
   say "Wall mode:        $wall_mode ($wall_db dB)";
@@ -190,13 +179,19 @@ sub _find_val {
   return $target;
 }
 
-sub _slider {
+sub _get_slider {
+  my ($command, $array) = @_;
+  my $int = unpack 'C', substr(_command($command), 3, 1);
+  return $array->[$int - 128] // 'Unknown';
+}
+
+sub _set_slider {
   my ($op, $array, $val) = @_;
   die "Unknown value: $val\n" unless my $to = _find_val($array, $val);
   _command("\x53$op\x81" . pack('C', $to));
 }
 
-sub _switch {
+sub _set_switch {
   my ($bits, $offset, $val) = @_;
 
   return $bits unless $val;
