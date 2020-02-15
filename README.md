@@ -68,6 +68,7 @@ Usage: kefctl [OPTIONS]
   ```
 Usage: kefdsp [OPTIONS]
 
+    kefdsp --status
     kefdsp --desk-mode on
     kefdsp --wall-mode off
     kefdsp --desk -3.5

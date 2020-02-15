@@ -116,7 +116,7 @@ elsif ($unmute) {
 # Turn off
 elsif ($off) { _command($OFF) }
 
-# Status information (still need to figure out more)
+# Status information (should be complete)
 elsif ($status) {
 
   my $volume = _get_volume();

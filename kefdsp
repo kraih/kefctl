@@ -111,6 +111,7 @@ elsif (defined $low) { _slider("\x2c", $LOW_HZ, $low) }
 # Sub gain
 elsif (defined $gain) { _slider("\x2d", $SUB_DB, $gain) }
 
+# Status information (should be complete)
 elsif ($status) {
   my $mode_bits = unpack 'B*', substr(_command($GET_MODE), 3, 1);
   warn "*** MODE: $mode_bits\n" if DEBUG;
@@ -212,6 +213,7 @@ sub _usage {
   say <<'EOF';
 Usage: kefdsp [OPTIONS]
 
+    kefdsp --status
     kefdsp --desk-mode on
     kefdsp --wall-mode off
     kefdsp --desk -3.5
