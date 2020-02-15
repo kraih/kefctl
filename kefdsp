@@ -48,7 +48,7 @@ my $SUB_DB = [
 my $HOST = '192.168.178.42';
 if (-r (my $config = File::Spec->catfile($ENV{HOME}, '.kefctl'))) {
   open my $fh, '<', $config or die "Can't open file: $!";
-  $HOST = do { local $/; <$fh> };
+  $HOST = <$fh>;
   chomp $HOST;
 }
 
