@@ -38,7 +38,7 @@ Usage: kefctl [OPTIONS]
 
   Options:
     -h, --help                  Show this summary of available options
-    -H, --host <host>           Speaker host, defaults to 192.168.178.66
+    -H, --host <host>           Speaker host, defaults to 192.168.178.42
     -i, --input <source>        Set input source to aux, bluetooth, optical,
                                 usb or wifi
     -I, --inverse               Inverse L/R speakers, this option can only be
@@ -90,7 +90,7 @@ Usage: kefdsp [OPTIONS]
     -g, --sub-gain <db>         Set dB value for sub gain, between -10.0 and
                                 +10.0 in steps of 1.0
     -h, --help                  Show this summary of available options
-    -H, --host <host>           Speaker host, defaults to 192.168.178.66
+    -H, --host <host>           Speaker host, defaults to 192.168.178.42
     -i, --high <hz>             Set Hz value for high-pass mode, between 50 and
                                 120 in steps of 5
     -I, --high-pass <mode>      Set high pass mode on or off
@@ -112,6 +112,17 @@ Usage: kefdsp [OPTIONS]
   You can also set the KEFDSP_DEBUG environment variable to get diagnostics
   information printed to STDERR.
   ```
+
+## Configuration
+
+  Both `kefctl` and `kefdsp` will try to read the speaker host from the config
+  file `~/.kefctl`.
+
+    $ echo 192.168.178.66 > ~/.kefctl
+
+  To detect your speakers with UPnP, you can use the script
+  `tools/detect-speakers.pl`. But be aware that it will require a few extra CPAN
+  modules to be installed.
 
 ## Copyright and License
 
