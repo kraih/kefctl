@@ -31,6 +31,7 @@ Usage: kefctl [OPTIONS]
     kefctl --raise 5
     kefctl --lower 5
     kefctl --off
+    kefctl --on
     kefctl -i optical
     kefctl -i bluetooth -S 20 -I
     kefctl -H 192.168.178.52 -p 50001 -i aux
@@ -47,7 +48,8 @@ Usage: kefctl [OPTIONS]
     -m, --mute                  Mute speakers
     -o, --off                   Turn speakers off, the speakers can be turned
                                 back on by setting an input source with the
-                                --input option
+                                --input option or --on to reuse old settings
+    -O, --on                    Turn speakers on, reusing old settings
     -p, --port <port>           Speaker port, defaults to 50001
     -r, --request <hex>         Send raw request in hex format and show response
                                 (very useful for testing speaker features)
