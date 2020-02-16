@@ -107,10 +107,10 @@ elsif ($unmute) {
 }
 
 # Turn on
-elsif ($on) { _power('0') }
+elsif ($on) { _power(0) }
 
 # Turn off
-elsif ($off) { _power('1') }
+elsif ($off) { _power(1) }
 
 # Status information (should be complete)
 elsif ($status) {
@@ -180,9 +180,20 @@ sub _set_volume {
 }
 
 sub _power {
-  my $switch      = shift;
+  my $off = shift;
+
   my $source_bits = unpack 'B*', substr(_command($GET_SOURCE), 3, 1);
-  substr $source_bits, 0, 1, $switch;
+
+  # All KEF speakers seem to have a bug where the control server crashes when
+  # they are powered off with a 20 minute standby time (so we always switch from
+  # 20 to 60 before powering off)
+  if ($off && substr($source_bits, 2, 2) eq '00') {
+    substr $source_bits, 2, 2, '01';
+    my $source = pack 'B*', $source_bits;
+    _command("\x53\x30\x81$source");
+  }
+
+  substr $source_bits, 0, 1, $off ? '1' : '0';
   my $source = pack 'B*', $source_bits;
   _command("\x53\x30\x81$source");
 }
