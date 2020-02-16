@@ -106,7 +106,7 @@ elsif ($unmute) {
   _set_volume($current - 128) if $current >= 128;
 }
 
-# Turn off
+# Turn on
 elsif ($on) { _power('0') }
 
 # Turn off
