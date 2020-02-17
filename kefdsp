@@ -181,7 +181,7 @@ sub _find_val {
   my $target;
   for my $i (0 .. $#$array) {
     next unless $val eq $array->[$i];
-    $target = 128 + $i;
+    $target = $i;
     last;
   }
 
