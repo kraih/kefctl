@@ -15,7 +15,7 @@ use IO::Socket::INET;
 
 use constant DEBUG => $ENV{KEFCTL_DEBUG} || 0;
 
-our $VERSION = '1.10';
+our $VERSION = '1.11';
 
 my $GET_VOLUME = "\x47\x25\x80\x6c";
 my $GET_SOURCE = "\x47\x30\x80\xd9";
@@ -33,7 +33,7 @@ GetOptions
   'h|help'      => \my $help,
   'H|host=s'    => \$HOST,
   'i|input=s'   => \my $input,
-  'I|inverse'   => \my $inverse,
+  'I|inverse=s' => \my $inverse,
   'L|lower=i'   => \my $lower,
   'm|mute'      => \my $mute,
   'o|off'       => \my $off,
@@ -42,7 +42,7 @@ GetOptions
   'r|request=s' => \my $request,
   'R|raise=i'   => \my $raise,
   's|status'    => \my $status,
-  'S|standby=i' => \(my $standby = 60),
+  'S|standby=i' => \my $standby,
   'u|unmute'    => \my $unmute,
   'v|volume=i'  => \my $volume,
   'version'     => \my $version;
@@ -57,21 +57,33 @@ elsif ($version) { say "kefctl $VERSION" }
 elsif ($request) { say unpack 'H*', _command(pack('H*', $request)) }
 
 # Set input source, standby mode and inverse mode
-elsif ($input) {
-  my $source_bits = '0000000000';
-  substr $source_bits, 1, 1, '1' if $inverse;
+elsif ($input || $inverse || defined $standby) {
+  my $source_bits = unpack 'B*', substr(_command($GET_SOURCE), 3, 1);
 
-  if    ($standby eq '60') { substr $source_bits, 2, 2, '01' }
-  elsif ($standby eq '0')  { substr $source_bits, 2, 2, '10' }
-  elsif ($standby ne '20') { die "Unknown standby mode: $standby\n" }
+  # Always power on
+  substr $source_bits, 0, 1, '0';
 
-  $input = lc $input;
-  if    ($input eq 'wifi')      { substr $source_bits, 4, 4, '0010' }
-  elsif ($input eq 'usb')       { substr $source_bits, 4, 4, '1100' }
-  elsif ($input eq 'bluetooth') { substr $source_bits, 4, 4, '1001' }
-  elsif ($input eq 'aux')       { substr $source_bits, 4, 4, '1010' }
-  elsif ($input eq 'optical')   { substr $source_bits, 4, 4, '1011' }
-  else                          { die "Unknown input: $input\n" }
+  if ($inverse && (my $val = lc $inverse)) {
+    if    ($val eq 'on')  { substr $source_bits, 1, 1, '1' }
+    elsif ($val eq 'off') { substr $source_bits, 1, 1, '0' }
+    else                  { die "Unknown value: $val\n" }
+  }
+
+  if (defined $standby) {
+    if    ($standby eq '60') { substr $source_bits, 2, 2, '01' }
+    elsif ($standby eq '0')  { substr $source_bits, 2, 2, '10' }
+    elsif ($standby eq '20') { substr $source_bits, 2, 2, '10' }
+    else                     { die "Unknown value: $standby\n" }
+  }
+
+  if ($input && (my $val = lc $input)) {
+    if    ($input eq 'wifi')      { substr $source_bits, 4, 4, '0010' }
+    elsif ($input eq 'usb')       { substr $source_bits, 4, 4, '1100' }
+    elsif ($input eq 'bluetooth') { substr $source_bits, 4, 4, '1001' }
+    elsif ($input eq 'aux')       { substr $source_bits, 4, 4, '1010' }
+    elsif ($input eq 'optical')   { substr $source_bits, 4, 4, '1011' }
+    else                          { die "Unknown value: $val\n" }
+  }
 
   my $source = pack 'B*', $source_bits;
   _command("\x53\x30\x81$source");
@@ -127,7 +139,7 @@ elsif ($status) {
   my $source_bits = unpack 'B*', substr(_command($GET_SOURCE), 3, 1);
   warn "*** SRC: $source_bits\n" if DEBUG;
   my $power   = substr($source_bits, 0, 1) ? 'Off' : 'On';
-  my $inverse = substr($source_bits, 1, 1) ? 'Yes' : 'No';
+  my $inverse = substr($source_bits, 1, 1) ? 'On'  : 'Off';
 
   my $standby_bits = substr($source_bits, 2, 2);
   my $standby      = 'Unknown';
@@ -209,7 +221,7 @@ Usage: kefctl [OPTIONS]
     kefctl --off
     kefctl --on
     kefctl -i optical
-    kefctl -i bluetooth -S 20 -I
+    kefctl -i bluetooth -S 20 -I on
     kefctl -H 192.168.178.52 -p 50001 -i aux
     kefctl -r 5330819b0b
 
@@ -218,14 +230,13 @@ Usage: kefctl [OPTIONS]
     -H, --host <host>           Speaker host, defaults to 192.168.178.42
     -i, --input <source>        Set input source to aux, bluetooth, optical,
                                 usb or wifi
-    -I, --inverse               Inverse L/R speakers, this option can only be
-                                used together with the --input option
+    -I, --inverse <mode>        Set inverse L/R speakers to on or off
     -L, --lower <percentage>    Lower volume by X percent
     -m, --mute                  Mute speakers
     -o, --off                   Turn speakers off, the speakers can be turned
-                                back on by setting an input source with the
-                                --input option or --on to reuse old settings
-    -O, --on                    Turn speakers on, reusing old settings
+                                back on with the --on option or by setting an
+                                input source with the --input option
+    -O, --on                    Turn speakers on
     -p, --port <port>           Speaker port, defaults to 50001
     -r, --request <hex>         Send raw request in hex format and show response
                                 (very useful for testing speaker features)
