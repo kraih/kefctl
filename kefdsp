@@ -17,13 +17,13 @@ use constant DEBUG => $ENV{KEFDSP_DEBUG} || 0;
 
 our $VERSION = '1.01';
 
-my $GET_MODE      = "\x47\x27\x80\x40";
-my $GET_DESK_DB   = "\x47\x28\x80\x92";
-my $GET_WALL_DB   = "\x47\x29\x80\x92";
-my $GET_TREBLE_DB = "\x47\x2a\x80\x40";
-my $GET_HIGH_HZ   = "\x47\x2b\x80\x40";
-my $GET_LOW_HZ    = "\x47\x2c\x80\x40";
-my $GET_SUB_DB    = "\x47\x2d\x80\x40";
+my $GET_MODE      = "\x47\x27\x80";
+my $GET_DESK_DB   = "\x47\x28\x80";
+my $GET_WALL_DB   = "\x47\x29\x80";
+my $GET_TREBLE_DB = "\x47\x2a\x80";
+my $GET_HIGH_HZ   = "\x47\x2b\x80";
+my $GET_LOW_HZ    = "\x47\x2c\x80";
+my $GET_SUB_DB    = "\x47\x2d\x80";
 
 my $DESK_WALL_DB = [
   '-6.0', '-5.5', '-5.0', '-4.5', '-4.0', '-3.5', '-3.0', '-2.5',
