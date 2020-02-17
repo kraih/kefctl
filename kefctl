@@ -17,8 +17,8 @@ use constant DEBUG => $ENV{KEFCTL_DEBUG} || 0;
 
 our $VERSION = '1.11';
 
-my $GET_VOLUME = "\x47\x25\x80\x6c";
-my $GET_SOURCE = "\x47\x30\x80\xd9";
+my $GET_VOLUME = "\x47\x25\x80";
+my $GET_SOURCE = "\x47\x30\x80";
 
 # Config file
 my $HOST = '192.168.178.42';
