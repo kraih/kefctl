@@ -18,6 +18,8 @@
   * Change input source
   * Change volume
   * Mute and unmute speakers
+  * Play and pause
+  * Previous and next track
   * Standby modes
   * Inverse L/R speakers
   * Check current speaker status
@@ -32,9 +34,10 @@ Usage: kefctl [OPTIONS]
     kefctl --lower 5
     kefctl --off
     kefctl --on
+    kefctl --play
     kefctl -i optical
     kefctl -i bluetooth -S 20 -I on
-    kefctl -H 192.168.178.52 -p 50001 -i aux
+    kefctl -H 192.168.178.52 -T 50001 -i aux
     kefctl -r 5330819b0b
 
   Options:
@@ -45,11 +48,13 @@ Usage: kefctl [OPTIONS]
     -I, --inverse <mode>        Set inverse L/R speakers to on or off
     -L, --lower <percentage>    Lower volume by X percent
     -m, --mute                  Mute speakers
+    -n, --next                  Next track
     -o, --off                   Turn speakers off, the speakers can be turned
                                 back on with the --on option or by setting an
                                 input source with the --input option
     -O, --on                    Turn speakers on
-    -p, --port <port>           Speaker port, defaults to 50001
+    -p, --play                  Play or pause track
+    -P, --previous              Previous track
     -r, --request <hex>         Send raw request in hex format and show response
                                 (very useful for testing speaker features)
     -R, --raise <percentage>    Raise volume by X percent
@@ -57,6 +62,7 @@ Usage: kefctl [OPTIONS]
     -S, --standby <minutes>     Set standby time to 20, 60 or 0 (to turn standby
                                 off), this option can only be used together with
                                 the --input option
+    -T, --port <port>           Speaker port, defaults to 50001
     -u, --unmute                Unmute speakers
     -v, --volume <percentage>   Set volume to a percentage value of 0-100, be
                                 aware that every input source has its own volume
