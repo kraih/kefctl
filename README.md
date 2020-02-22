@@ -48,7 +48,7 @@ Usage: kefctl [OPTIONS]
     -I, --inverse <mode>        Set inverse L/R speakers to on or off
     -L, --lower <percentage>    Lower volume by X percent
     -m, --mute                  Mute speakers
-    -n, --next                  Next track
+    -N, --next                  Next track
     -o, --off                   Turn speakers off, the speakers can be turned
                                 back on with the --on option or by setting an
                                 input source with the --input option
