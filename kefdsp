@@ -16,7 +16,7 @@ use Socket qw(IPPROTO_TCP TCP_NODELAY);
 
 use constant DEBUG => $ENV{KEFDSP_DEBUG} || 0;
 
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 my $GET_MODE      = "\x47\x27\x80";
 my $GET_DESK_DB   = "\x47\x28\x80";
@@ -64,7 +64,6 @@ GetOptions
   'i|high=s'         => \my $high,
   'I|high-pass=s'    => \my $high_pass,
   'l|low=s'          => \my $low,
-  'p|port=s'         => \(my $port = 50001),
   'P|phase=s'        => \my $phase,
   'r|request=s'      => \my $request,
   's|status'         => \my $status,
@@ -165,7 +164,7 @@ sub _command {
   unless ($sock) {
     $sock = IO::Socket::INET->new(
       PeerHost => $HOST,
-      PeerPort => $port,
+      PeerPort => 50001,
       Type     => SOCK_STREAM,
     ) or die "Cannot construct socket: $@";
     setsockopt $sock, IPPROTO_TCP, TCP_NODELAY, 1;
@@ -232,7 +231,7 @@ Usage: kefdsp [OPTIONS]
     kefdsp --low 80
     kefdsp -l 80
     kefdsp -e less
-    kefdsp -H 192.168.178.52 -p 50001 -g +5.0
+    kefdsp -H 192.168.178.52 -g +5.0
     kefdsp -r 5330819b0bb
 
   Options:
@@ -250,7 +249,6 @@ Usage: kefdsp [OPTIONS]
     -I, --high-pass <mode>      Set high pass mode on or off
     -l, --low <hz>              Set Hz value for sub out low-pass, between 40
                                 and 250 in steps of 5
-    -p, --port <port>           Speaker port, defaults to 50001
     -P, --phase <mode>          Set phase correction on or off
     -r, --request <hex>         Send raw request in hex format and show response
                                 (very useful for testing speaker features)

@@ -16,7 +16,7 @@ use Socket qw(IPPROTO_TCP TCP_NODELAY);
 
 use constant DEBUG => $ENV{KEFCTL_DEBUG} || 0;
 
-our $VERSION = '1.11';
+our $VERSION = '1.12';
 
 my $GET_VOLUME = "\x47\x25\x80";
 my $GET_SOURCE = "\x47\x30\x80";
@@ -50,7 +50,6 @@ GetOptions
   'R|raise=i'   => \my $raise,
   's|status'    => \my $status,
   'S|standby=i' => \my $standby,
-  'T|port=s'    => \(my $port = 50001),
   'u|unmute'    => \my $unmute,
   'v|volume=i'  => \my $volume,
   'version'     => \my $version;
@@ -189,7 +188,7 @@ sub _command {
   unless ($sock) {
     $sock = IO::Socket::INET->new(
       PeerHost => $HOST,
-      PeerPort => $port,
+      PeerPort => 50001,
       Type     => SOCK_STREAM,
     ) or die "Cannot construct socket: $@";
     setsockopt $sock, IPPROTO_TCP, TCP_NODELAY, 1;
@@ -244,7 +243,7 @@ Usage: kefctl [OPTIONS]
     kefctl --play
     kefctl -i optical
     kefctl -i bluetooth -S 20 -I on
-    kefctl -H 192.168.178.52 -T 50001 -i aux
+    kefctl -H 192.168.178.52 -i aux
     kefctl -r 5330819b0b
 
   Options:
@@ -269,7 +268,6 @@ Usage: kefctl [OPTIONS]
     -S, --standby <minutes>     Set standby time to 20, 60 or 0 (to turn standby
                                 off), this option can only be used together with
                                 the --input option
-    -T, --port <port>           Speaker port, defaults to 50001
     -u, --unmute                Unmute speakers
     -v, --volume <percentage>   Set volume to a percentage value of 0-100, be
                                 aware that every input source has its own volume

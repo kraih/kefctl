@@ -37,7 +37,7 @@ Usage: kefctl [OPTIONS]
     kefctl --play
     kefctl -i optical
     kefctl -i bluetooth -S 20 -I on
-    kefctl -H 192.168.178.52 -T 50001 -i aux
+    kefctl -H 192.168.178.52 -i aux
     kefctl -r 5330819b0b
 
   Options:
@@ -62,7 +62,6 @@ Usage: kefctl [OPTIONS]
     -S, --standby <minutes>     Set standby time to 20, 60 or 0 (to turn standby
                                 off), this option can only be used together with
                                 the --input option
-    -T, --port <port>           Speaker port, defaults to 50001
     -u, --unmute                Unmute speakers
     -v, --volume <percentage>   Set volume to a percentage value of 0-100, be
                                 aware that every input source has its own volume
@@ -85,7 +84,7 @@ Usage: kefdsp [OPTIONS]
     kefdsp --low 80
     kefdsp -l 80
     kefdsp -e less
-    kefdsp -H 192.168.178.52 -p 50001 -g +5.0
+    kefdsp -H 192.168.178.52 -g +5.0
     kefdsp -r 5330819b0bb
 
   Options:
@@ -103,7 +102,6 @@ Usage: kefdsp [OPTIONS]
     -I, --high-pass <mode>      Set high pass mode on or off
     -l, --low <hz>              Set Hz value for sub out low-pass, between 40
                                 and 250 in steps of 5
-    -p, --port <port>           Speaker port, defaults to 50001
     -P, --phase <mode>          Set phase correction on or off
     -r, --request <hex>         Send raw request in hex format and show response
                                 (very useful for testing speaker features)
