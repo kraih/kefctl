@@ -256,8 +256,8 @@ Usage: kefdsp [OPTIONS]
     -S, --sub-polarity <mode>   Set sub polarity to - or +
     -t, --treble <db>           Set dB value for treble trim, between -2.0 and
                                 +2.0 in steps of 0.5.
-    -w, --wall <db>             Set dB value for wall mode, between -6.0 and 0
         --version               Show version
+    -w, --wall <db>             Set dB value for wall mode, between -6.0 and 0
                                 in steps of 0.5
     -W, --wall-mode <mode>      Set wall mode on or off
 
