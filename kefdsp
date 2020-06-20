@@ -26,23 +26,17 @@ my $GET_HIGH_HZ   = "\x47\x2b\x80";
 my $GET_LOW_HZ    = "\x47\x2c\x80";
 my $GET_SUB_DB    = "\x47\x2d\x80";
 
-my $DESK_WALL_DB = [
-  '-6.0', '-5.5', '-5.0', '-4.5', '-4.0', '-3.5', '-3.0', '-2.5',
-  '-2.0', '-1.5', '-1.0', '-0.5', '0'
-];
-my $TREBLE_DB
-  = ['-2.0', '-1.5', '-1.0', '-0.5', '0', '+0.5', '+1.0', '+1.5', '+2.0'];
-my $HIGH_HZ = [50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120];
-my $LOW_HZ  = [
-  40,  45,  50,  55,  60,  65,  70,  75,  80,  85,  90,  95,
-  100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155,
-  160, 165, 170, 175, 180, 185, 190, 195, 200, 205, 210, 215,
-  220, 225, 230, 235, 240, 245, 250
+my $DESK_WALL_DB
+  = ['-6.0', '-5.5', '-5.0', '-4.5', '-4.0', '-3.5', '-3.0', '-2.5', '-2.0', '-1.5', '-1.0', '-0.5', '0'];
+my $TREBLE_DB = ['-2.0', '-1.5', '-1.0', '-0.5', '0', '+0.5', '+1.0', '+1.5', '+2.0'];
+my $HIGH_HZ   = [50,     55,     60,     65,     70,  75,     80,     85,     90, 95, 100, 105, 110, 115, 120];
+my $LOW_HZ = [
+  40,  45,  50,  55,  60,  65,  70,  75,  80,  85,  90,  95,  100, 105, 110, 115, 120, 125, 130, 135, 140, 145,
+  150, 155, 160, 165, 170, 175, 180, 185, 190, 195, 200, 205, 210, 215, 220, 225, 230, 235, 240, 245, 250
 ];
 my $SUB_DB = [
-  '-10.0', '-9.0', '-8.0', '-7.0', '-6.0', '-5.0', '-4.0', '-3.0',
-  '-2.0',  '-1.0', '0',    '+1.0', '+2.0', '+3.0', '+4.0', '+5.0',
-  '+6.0',  '+7.0', '+8.0', '+9.0', '+10.0'
+  '-10.0', '-9.0', '-8.0', '-7.0', '-6.0', '-5.0', '-4.0', '-3.0', '-2.0', '-1.0', '0', '+1.0',
+  '+2.0',  '+3.0', '+4.0', '+5.0', '+6.0', '+7.0', '+8.0', '+9.0', '+10.0'
 ];
 
 # Config file
@@ -162,18 +156,14 @@ sub _command {
 
   state $sock;
   unless ($sock) {
-    $sock = IO::Socket::INET->new(
-      PeerHost => $HOST,
-      PeerPort => 50001,
-      Type     => SOCK_STREAM,
-    ) or die "Cannot construct socket: $@";
+    $sock = IO::Socket::INET->new(PeerHost => $HOST, PeerPort => 50001, Type => SOCK_STREAM,)
+      or die "Cannot construct socket: $@";
     setsockopt $sock, IPPROTO_TCP, TCP_NODELAY, 1;
   }
 
   warn "*** REQ: @{[unpack 'H*', $req]}\n" if DEBUG;
   $sock->syswrite($req) or die "Cannot write command: $!";
-  die "Could not read command response: $!"
-    unless defined(my $read = $sock->sysread(my $res, 1024, 0));
+  die "Could not read command response: $!" unless defined(my $read = $sock->sysread(my $res, 1024, 0));
   warn "*** RES: @{[unpack 'H*', $res]}\n" if DEBUG;
 
   return $res;
