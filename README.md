@@ -86,6 +86,8 @@ Usage: kefdsp [OPTIONS]
     kefdsp -e less
     kefdsp -H 192.168.178.52 -g +5.0
     kefdsp -r 5330819b0bb
+    kefdsp --export > kefdsp.backup
+    kefdsp $(< kefdsp.backup)
 
   Options:
     -d, --desk <db>             Set dB value for desk mode, between -6.0 and 0
@@ -113,6 +115,8 @@ Usage: kefdsp [OPTIONS]
     -w, --wall <db>             Set dB value for wall mode, between -6.0 and 0
                                 in steps of 0.5
     -W, --wall-mode <mode>      Set wall mode on or off
+    -x, --export                Export current settings as command line
+                                arguments for kefdsp
 
   You can also set the KEFDSP_DEBUG environment variable to get diagnostics
   information printed to STDERR.
