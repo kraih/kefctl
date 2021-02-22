@@ -50,6 +50,7 @@ GetOptions
   'R|raise=i'   => \my $raise,
   's|status'    => \my $status,
   'S|standby=i' => \my $standby,
+  't|toggle'    => \my $toggle,
   'u|unmute'    => \my $unmute,
   'v|volume=i'  => \my $volume,
   'version'     => \my $version;
@@ -106,13 +107,12 @@ elsif ($next) { _command($NEXT) }
 elsif ($prev) { _command($PREV) }
 
 # Set volume
-elsif (defined($volume) && $volume >= 0 && $volume <= 100) {
-  _set_volume($volume);
-}
+elsif (defined($volume) && $volume >= 0 && $volume <= 100) { _set_volume($volume) }
 
 # Raise volume
 elsif ($raise) {
-  my $target = _get_volume() + $raise;
+  my $current = _get_volume();
+  my $target  = ($current > 128 ? ($current - 128) : $current) + $raise;
   _set_volume($target > 100 ? 100 : $target);
 }
 
@@ -132,6 +132,12 @@ elsif ($mute) {
 elsif ($unmute) {
   my $current = _get_volume();
   _set_volume($current - 128) if $current >= 128;
+}
+
+# Toggle mute/unmute
+elsif ($toggle) {
+  my $current = _get_volume();
+  _set_volume($current >= 128 ? ($current - 128) : ($current + 128));
 }
 
 # Turn on
@@ -264,6 +270,7 @@ Usage: kefctl [OPTIONS]
     -S, --standby <minutes>     Set standby time to 20, 60 or 0 (to turn standby
                                 off), this option can only be used together with
                                 the --input option
+    -t, --toggle                Toggle mute/unmute
     -u, --unmute                Unmute speakers
     -v, --volume <percentage>   Set volume to a percentage value of 0-100, be
                                 aware that every input source has its own volume

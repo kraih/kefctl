@@ -65,6 +65,7 @@ Usage: kefctl [OPTIONS]
     -S, --standby <minutes>     Set standby time to 20, 60 or 0 (to turn standby
                                 off), this option can only be used together with
                                 the --input option
+    -t, --toggle                Toggle mute/unmute
     -u, --unmute                Unmute speakers
     -v, --volume <percentage>   Set volume to a percentage value of 0-100, be
                                 aware that every input source has its own volume
