@@ -118,7 +118,8 @@ elsif ($raise) {
 
 # Lower volume
 elsif ($lower) {
-  my $target = _get_volume() - $lower;
+  my $current = _get_volume();
+  my $target  = ($current > 128 ? ($current - 128) : $current) - $lower;
   _set_volume($target < 0 ? 0 : $target);
 }
 
