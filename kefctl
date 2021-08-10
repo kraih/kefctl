@@ -80,7 +80,7 @@ elsif ($input || $inverse || defined $standby) {
   if (defined $standby) {
     if    ($standby eq '60') { substr $source_bits, 2, 2, '01' }
     elsif ($standby eq '0')  { substr $source_bits, 2, 2, '10' }
-    elsif ($standby eq '20') { substr $source_bits, 2, 2, '10' }
+    elsif ($standby eq '20') { substr $source_bits, 2, 2, '00' }
     else                     { die "Unknown value: $standby\n" }
   }
 
