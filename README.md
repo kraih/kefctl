@@ -1,5 +1,7 @@
 # kefctl - a command line application for controlling KEF speakers
 
+  **UNMAINTAINED: Since my LS50Ws broke almost immediately after the warranty ran out.**
+
   This application only requires Perl 5.10.1 or newer to be installed and has no
   other dependencies. So it should run pretty much everywhere without too much
   trouble, especially on Linux.
