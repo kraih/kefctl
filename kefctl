@@ -53,6 +53,8 @@ GetOptions
   't|toggle'    => \my $toggle,
   'u|unmute'    => \my $unmute,
   'v|volume=i'  => \my $volume,
+  'w|wake'      => \my $wake,
+  'W|sleep'     => \my $sleep,
   'version'     => \my $version;
 
 # Usage
@@ -185,6 +187,36 @@ elsif ($status) {
   say "Power:   $power";
 }
 
+# Accompany computer boot/wake
+elsif ($wake) {
+  my $source_bits = unpack 'B*', substr(_command($GET_SOURCE), 3, 1);
+  warn "*** SRC: $source_bits\n" if DEBUG;
+  my $power   = substr($source_bits, 0, 1) ? 'Off' : 'On';
+  
+  
+  if    ($power eq 'Off') {
+#   say "Power:   $power";
+    substr $source_bits, 0, 1, '0';
+    substr $source_bits, 4, 4, '1010';
+        
+    my $source = pack 'B*', $source_bits;
+    _command("\x53\x30\x81$source");
+  }
+}
+
+# Accompany computer shutdown/suspend
+elsif ($sleep) {
+  my $source_bits = unpack 'B*', substr(_command($GET_SOURCE), 3, 1);
+  warn "*** SRC: $source_bits\n" if DEBUG;
+  my $power   = substr($source_bits, 0, 1) ? 'Off' : 'On';
+  
+  
+  if ($power eq 'On') {
+    my $input_bits = substr($source_bits, 4, 4);
+    if ($input_bits eq '1010') {_power(1) }
+  }
+}
+
 # Usage
 else { _usage() }
 
@@ -234,7 +266,7 @@ sub _power {
 }
 
 sub _usage {
-  say <<'EOF';
+  say <<'EOF';  
 Usage: kefctl [OPTIONS]
 
     kefctl --status
@@ -276,6 +308,10 @@ Usage: kefctl [OPTIONS]
     -v, --volume <percentage>   Set volume to a percentage value of 0-100, be
                                 aware that every input source has its own volume
                                 setting
+    -w, --wake                  Check if Power is off, if yes: turn on and set
+                                input source to aux
+    -W, --sleep                 Check if Power is on and Input is AUX, if yes:
+                                turn speakers off
         --version               Show version
 
   You can also set the KEFCTL_DEBUG environment variable to get diagnostics
